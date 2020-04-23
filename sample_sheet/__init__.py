@@ -273,7 +273,7 @@ class Sample(CaseInsensitiveDict):
 
     _valid_index_key_pattern = re.compile(r'index\d?')
     # https://kb.10xgenomics.com/hc/en-us/articles/218168503-What-oligos-are-in-my-sample-index-
-    _valid_index_value_pattern = re.compile(r'^[ACGTN]*$|^SI-[GN]A-[A-H]\d+$')
+    _valid_index_value_pattern = re.compile(r'^[ACGTN]*$|^SI-[ACGTN]{2}-[A-H]\d+$')
 
     def __init__(
         self, data: Optional[Mapping] = None, **kwargs: Mapping
@@ -533,11 +533,10 @@ class SampleSheet(object):
                 continue
 
             # [<Other>] - keys in first column and values in second column.
-            else:
-                key, value, *_ = line
+            elif len(line) >= 2:
+                key, value = (line[0], line[1])
                 section: Section = getattr(self, section_name)
                 section[key] = value
-                continue
 
     def add_sample(self, sample: Sample) -> None:
         """Add a :class:`Sample` to this :class:`SampleSheet`.
